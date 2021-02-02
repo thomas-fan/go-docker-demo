@@ -3,6 +3,8 @@ FROM golang:1.15 as builder
 # 启用go module 并设置代理
 ENV GO111MODULE=on \
     GOPROXY=https://goproxy.cn,direct
+
+ENV GIN_MODE=release
 # 添加非 root 用户
 RUN adduser -u 10001 app-runner
 WORKDIR /build
@@ -12,7 +14,7 @@ ADD go.sum .
 RUN go mod download
 # 拷贝项目文件
 COPY . .
-
+RUN go test
 # 指定OS等，并go build
 RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .
 
